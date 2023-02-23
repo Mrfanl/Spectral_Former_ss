@@ -283,7 +283,7 @@ def cal_results(matrix):
     shape = np.shape(matrix)
     number = 0
     sum = 0
-    AA = np.zeros([shape[0]], dtype=np.float)
+    AA = np.zeros([shape[0]], dtype=float)
     for i in range(shape[0]):
         number += matrix[i, i]
         AA[i] = matrix[i, i] / np.sum(matrix[i, :])
@@ -297,6 +297,7 @@ def cal_results(matrix):
 # Parameter Setting
 OAS = []
 AAS = []
+AAS2 = []
 KappaS = []
 for seed in range(30):
     args = parser.parse_args()
@@ -440,6 +441,7 @@ for seed in range(30):
     OAS.append(OA2)
     AAS.append(AA_mean2)
     KappaS.append(Kappa2)
+    AAS2.append(AA2)
     print("Final result:")
     print("OA: {:.4f} | AA: {:.4f} | Kappa: {:.4f}".format(OA2, AA_mean2, Kappa2))
     print(AA2)
@@ -453,6 +455,7 @@ for seed in range(30):
 print("OAS:",OAS)
 print("AAS:",AAS)
 print("Kappas:",KappaS)
+print("AAS2:",AAS2)
 
 
 
