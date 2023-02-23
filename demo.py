@@ -32,7 +32,7 @@ parser.add_argument('--gamma', type=float, default=0.9, help='gamma')
 parser.add_argument('--weight_decay', type=float, default=0, help='weight_decay')
 args = parser.parse_args()
 
-os.environ["CUDA_VISIBLE_DEVICES"] = str(args.gpu_id)
+# os.environ["CUDA_VISIBLE_DEVICES"] = str(args.gpu_id)
 #-------------------------------------------------------------------------------
 # 定位训练和测试样本
 def chooose_train_and_test_point(train_data, test_data, true_data, num_classes):
@@ -314,8 +314,20 @@ TR = data['TR']
 TE = data['TE']
 input = data['input'] #(145,145,200)
 label = TR + TE
+# import IPython; import sys
+# IPython.embed();sys.exit()
+if args.dataset == 'Indian':
+    IP_label = loadmat("data/Indian_pines_gt.mat")['indian_pines_gt']
+    TR,TE = np.zeros_like(IP_label), np.zeros_like(IP_label)
+    sample_512= [2, 71, 42, 12, 24, 36, 1, 24, 1, 49, 123,  30, 10, 63, 19 ,5]
+    for i in range(16):
+        pos_x,pos_y = np.where(IP_label==(i+1))
+        indexs = np.arange(len(pos_x))
+        np.random.shuffle(indexs)
+        TR_id,TE_id = indexs[:sample_512[i]], indexs[sample_512[i]:]
+        TR[pos_x[TR_id],pos_y[TR_id]] = IP_label[pos_x[TR_id],pos_y[TR_id]]
+        TE[pos_x[TE_id],pos_y[TE_id]] = IP_label[pos_x[TE_id],pos_y[TE_id]]
 num_classes = np.max(TR)
-
 color_mat_list = list(color_mat)
 color_matrix = color_mat[color_mat_list[3]] #(17,3)
 # normalize data by band norm
@@ -330,10 +342,12 @@ print("height={0},width={1},band={2}".format(height, width, band))
 #-------------------------------------------------------------------------------
 # obtain train and test data
 total_pos_train, total_pos_test, total_pos_true, number_train, number_test, number_true = chooose_train_and_test_point(TR, TE, label, num_classes)
+
 mirror_image = mirror_hsi(height, width, band, input_normalize, patch=args.patches)
 x_train_band, x_test_band, x_true_band = train_and_test_data(mirror_image, band, total_pos_train, total_pos_test, total_pos_true, patch=args.patches, band_patch=args.band_patches)
 y_train, y_test, y_true = train_and_test_label(number_train, number_test, number_true, num_classes)
 #-------------------------------------------------------------------------------
+
 # load data
 x_train=torch.from_numpy(x_train_band.transpose(0,2,1)).type(torch.FloatTensor) #[695, 200, 7, 7]
 y_train=torch.from_numpy(y_train).type(torch.LongTensor) #[695]
