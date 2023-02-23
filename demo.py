@@ -30,7 +30,7 @@ parser.add_argument('--epoches', type=int, default=300, help='epoch number')
 parser.add_argument('--learning_rate', type=float, default=5e-4, help='learning rate')
 parser.add_argument('--gamma', type=float, default=0.9, help='gamma')
 parser.add_argument('--weight_decay', type=float, default=0, help='weight_decay')
-args = parser.parse_args()
+
 
 # os.environ["CUDA_VISIBLE_DEVICES"] = str(args.gpu_id)
 #-------------------------------------------------------------------------------
@@ -299,6 +299,7 @@ OAS = []
 AAS = []
 KappaS = []
 for seed in range(30):
+    args = parser.parse_args()
     args.seed = seed
     np.random.seed(args.seed)
     torch.manual_seed(args.seed)
